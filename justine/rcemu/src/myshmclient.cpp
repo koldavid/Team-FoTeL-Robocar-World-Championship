@@ -350,12 +350,13 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
 
           if ( gngstrs.size() > 0 )
           {
+            g.clear();
             for (auto it : gngstrs)
             {
               g.push_back(it.to);
             }
-          }          
-	  
+          }
+
           if ( g.size() > 0 )
             {
 
