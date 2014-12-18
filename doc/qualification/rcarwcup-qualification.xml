@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<article xmlns="http://docbook.org/ns/docbook" version="5.1" xml:lang="en"
+         xmlns:xlink="http://www.w3.org/1999/xlink"
+         xmlns:xi="http://www.w3.org/2001/XInclude">    
+    <info>
+        <title>Team FoTeL</title>
+        <subtitle>Team Qualification Paper</subtitle>
+        <authorgroup>
+            <author>
+                <personname>
+                    <honorific></honorific>
+                    <surname>Fábián</surname>
+                    <firstname>Kristóf</firstname>        
+                </personname>    
+                <affiliation>
+                    <shortaffil></shortaffil>
+                    <jobtitle></jobtitle>
+                    <orgname></orgname>
+                    <orgdiv></orgdiv>
+                    <address>
+                        <email></email>
+                    </address>
+                </affiliation>
+                <address>
+                    <street></street>
+                    <city></city>
+                    <postcode></postcode>
+                    <country></country>
+                    <email>f-kristof@hotmail.com</email>
+                    <otheraddr>
+                        <link xlink:href=""></link>
+                    </otheraddr>
+                </address>
+            </author>
+            <author>
+                <personname>
+                    <honorific></honorific>
+                    <surname>Kolozsvári</surname>
+                    <firstname>Dávid</firstname>        
+                </personname>    
+                <affiliation>
+                    <shortaffil></shortaffil>
+                    <jobtitle></jobtitle>
+                    <orgname></orgname>
+                    <orgdiv></orgdiv>
+                    <address>
+                        <email></email>
+                    </address>
+                </affiliation>
+                <address>
+                    <street></street>
+                    <city></city>
+                    <postcode></postcode>
+                    <country></country>
+                    <email>freedawson@gmail.com</email>
+                    <otheraddr>
+                        <link xlink:href=""></link>
+                    </otheraddr>
+                </address>
+            </author>
+            <author>
+                <personname>
+                    <honorific></honorific>
+                    <surname>Kádár</surname>
+                    <firstname>Gergely</firstname>        
+                </personname>    
+                <affiliation>
+                    <shortaffil></shortaffil>
+                    <jobtitle></jobtitle>
+                    <orgname></orgname>
+                    <orgdiv></orgdiv>
+                    <address>
+                        <email></email>
+                    </address>
+                </affiliation>
+                <address>
+                    <street></street>
+                    <city></city>
+                    <postcode></postcode>
+                    <country></country>
+                    <email>kadargergely94@gmail.com</email>
+                    <otheraddr>
+                        <link xlink:href=""></link>
+                    </otheraddr>
+                </address>
+            </author>              
+        </authorgroup>
+        <pubdate>2014</pubdate>
+    </info>                                                                                                
+    <para>
+        Team logo: 
+    </para>
+    <mediaobject>
+        <imageobject>
+            <imagedata fileref="fotel_logo.jpg" scale="50"/>
+        </imageobject>
+        <textobject>
+            <phrase>
+                Team logo
+            </phrase>
+        </textobject>
+    </mediaobject>    
+    <para>
+        Qualification video:
+    </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                <link xlink:href="https://www.youtube.com/watch?v=ieE3uLXO-pQ"></link>
+            </para>
+        </listitem>
+    </itemizedlist>
+    <para>        
+        Under what license is your source code released?
+    </para>
+    <itemizedlist>
+        <listitem>
+            <para>GNU GPLv3</para>
+            <para>This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. </para>
+            <para>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more details.</para>
+            <para>You should have received a copy of the GNU General Public License along with this program.  If not, see <link xlink:href="http://www.gnu.org/licenses/"></link>.</para>
+        </listitem>
+    </itemizedlist>    
+    <para>
+        Where is your repo?
+    </para>
+    <itemizedlist>
+        <listitem>
+            <para>
+                <link xlink:href="https://github.com/koldavid/Team-FoTeL-Robocar-World-Championship"></link>
+            </para>
+        </listitem>
+    </itemizedlist>
+    <para>        
+        Please list the highlights of your project (one or two sentences per item).
+        <itemizedlist>
+            <listitem>
+                <para>Routing
+                </para>
+            </listitem>
+            <listitem>
+                <para>Catch the gangsters
+                </para>
+            </listitem>
+            <listitem>
+                <para>Cops cooperating
+                </para>
+            </listitem>
+        </itemizedlist>
+    </para>        
+</article>
