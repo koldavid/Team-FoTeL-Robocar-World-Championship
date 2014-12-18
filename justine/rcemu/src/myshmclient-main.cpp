@@ -79,14 +79,14 @@ int main ( int argc, char* argv[] )
      if ( vm.count ( "team" ) )
        team.assign ( vm["team"].as < std::string > () );
      else
-       team.assign ( "Norbi" );
+       team.assign ( "FoTeL" );
      
      // If you use this sample you should add your copyright information here too:
-     /*
-     std::cout << "This SHM Client program has been modified by <Your Name>" << std::endl
+    
+     std::cout << "This SHM Client program has been modified by Team FoTeL" << std::endl
      << "Copyright (C) 2014, 2015 Norbert Bátfai" << std::endl
      << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>" << std::endl
-     */
+     
 
      // Do not remove this copyright notice!
      std::cout << "GNU Robocar City Emulator and Robocar World Championship, Sample (My) SHM Client" << std::endl
