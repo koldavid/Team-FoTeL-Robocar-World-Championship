@@ -280,7 +280,7 @@ void justine::sampleclient::MyShmClient::start ( boost::asio::io_service& io_ser
 
   pos ( socket, id );
 
-  unsigned int g {0u};
+  std::vector<long unsigned int> g;
   unsigned int f {0u};
   unsigned int t {0u};
   unsigned int s {0u};
@@ -296,10 +296,13 @@ void justine::sampleclient::MyShmClient::start ( boost::asio::io_service& io_ser
       gngstrs = gangsters ( socket, id, t );
 
       if ( gngstrs.size() > 0 )
-        g = gngstrs[0].to;
-      else
-        g = 0;
-      if ( g > 0 )
+      {
+        for (auto it : gngstrs)
+        {
+          g.push_back(it.to);
+        }
+      }
+      if ( g.size() > 0 )
         {
 
           std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( t, g );
@@ -328,7 +331,7 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
 
   std::vector<Cop> cops = initcops ( socket );
 
-  unsigned int g {0u};
+  std::vector<long unsigned int> g;
   unsigned int f {0u};
   unsigned int t {0u};
   unsigned int s {0u};
@@ -346,11 +349,14 @@ void justine::sampleclient::MyShmClient::start10 ( boost::asio::io_service& io_s
           gngstrs = gangsters ( socket, cop, t );
 
           if ( gngstrs.size() > 0 )
-            g = gngstrs[0].to;
-          else
-            g = 0;
+          {
+            for (auto it : gngstrs)
+            {
+              g.push_back(it.to);
+            }
+          }          
 	  
-          if ( g > 0 )
+          if ( g.size() > 0 )
             {
 
               std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( t, g );

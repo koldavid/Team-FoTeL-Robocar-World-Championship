@@ -318,7 +318,7 @@ public:
    *
    * This function determines the shortest path from the source node to the target node.
    */
-  std::vector<osmium::unsigned_object_id_type> hasDijkstraPath ( osmium::unsigned_object_id_type from, osmium::unsigned_object_id_type to )
+  std::vector<osmium::unsigned_object_id_type> hasDijkstraPath ( osmium::unsigned_object_id_type from, std::vector<osmium::unsigned_object_id_type> to )
   {
 
 #ifdef DEBUG
@@ -339,8 +339,22 @@ public:
     VertexNameMap vertexNameMap = boost::get ( boost::vertex_name, *nr_graph );
 
     std::vector<osmium::unsigned_object_id_type> path;
-
-    NRGVertex tov = nr2v[to];
+    
+    std::vector<NRGVertex> toVertices;
+    for (auto it : to)
+    {
+      toVertices.push_back(nr2v[it]);
+    }
+    NRGVertex tov = toVertices[0];
+    double minDist = distanceMap[toVertices[0]];
+    for (size_t i = 1; i < toVertices.size(); i++)
+    {
+      if (distanceMap[toVertices[i]] < minDist)
+      {
+        minDist = distanceMap[toVertices[i]];
+        tov = toVertices[i];
+      }
+    }
     NRGVertex fromv = predecessorMap[tov];
 
 #ifdef DEBUG
@@ -399,7 +413,7 @@ private:
   void foo ( void )
   {
 
-    std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( 2969934868, 1348670117 );
+    std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath ( 2969934868, std::vector<long unsigned int>{1348670117} );
     std::copy ( path.begin(), path.end(),
                 std::ostream_iterator<osmium::unsigned_object_id_type> ( std::cout, " " ) );
 
