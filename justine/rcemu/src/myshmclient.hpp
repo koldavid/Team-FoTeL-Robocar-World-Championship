@@ -139,9 +139,8 @@ public:
    * then establishes a connection with the traffic server, finally
    * sends some client commands.
    */
-  void start ( boost::asio::io_service& io_service, const char * port );
 
-  void start10 ( boost::asio::io_service& io_service, const char * port );
+  void start ( size_t num_cops,  boost::asio::io_service& io_service, const char * port );
   
   /**
    * @brief This function counts the number of vertices and number of edges in the map graph.
@@ -433,7 +432,7 @@ private:
   typedef int Cop;  
   
   std::vector<Gangster> gangsters ( boost::asio::ip::tcp::socket & socket, int id, osmium::unsigned_object_id_type cop );
-  std::vector<Cop> initcops ( boost::asio::ip::tcp::socket & socket );
+  std::vector<Cop> initcops ( size_t num_cops, boost::asio::ip::tcp::socket & socket );
   void pos ( boost::asio::ip::tcp::socket & socket, int id );
   void car ( boost::asio::ip::tcp::socket & socket, int id, unsigned *f, unsigned *t, unsigned* s );
   void route ( boost::asio::ip::tcp::socket & socket, int id, std::vector<osmium::unsigned_object_id_type> & );

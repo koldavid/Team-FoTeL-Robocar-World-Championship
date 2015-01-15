@@ -41,6 +41,7 @@ int main ( int argc, char* argv[] )
      ( "shm", boost::program_options::value< std::string > (), "shared memory segment name" )
      ( "port", boost::program_options::value< std::string > (), "the TCP port that the traffic server is listening on to allow agents to communicate with the traffic simulation, the default value is 10007" )
      ( "team", boost::program_options::value< std::string > (), "team name" )
+     ( "nrcops", boost::program_options::value<int>(), "number of cops" )
      ;
 
      boost::program_options::variables_map vm;
@@ -81,6 +82,12 @@ int main ( int argc, char* argv[] )
      else
        team.assign ( "FoTeL" );
      
+     size_t num_cops;
+     if (vm.count( "nrcops" ))
+       num_cops = vm["nrcops"].as<int>();
+     else
+       num_cops = 10;
+
      // If you use this sample you should add your copyright information here too:
     
      std::cout << "This SHM Client program has been modified by Team FoTeL" << std::endl
@@ -99,7 +106,7 @@ int main ( int argc, char* argv[] )
 
      try {
           boost::asio::io_service io_service;
-          myShmClient.start10 ( io_service, port.c_str() );
+          myShmClient.start ( num_cops, io_service, port.c_str() );
      } catch ( std::exception& e ) {
           std::cerr << "Exception: " << e.what() << "\n";
      }
