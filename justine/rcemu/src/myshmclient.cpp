@@ -289,7 +289,7 @@ void justine::sampleclient::MyShmClient::start
     {
         std::this_thread::sleep_for(std::chrono::milliseconds(200));
 
-        for(auto cop : cops)
+        for(auto& cop : cops)
         {
             car ( socket, cop.id, &from, &to, &s );
 
@@ -319,31 +319,32 @@ void justine::sampleclient::MyShmClient::start
                         g_nr.push_back(it.to);
                     }
                 }
-            }
 
-            if(g_nr.size() > 0)
-            {
-                std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath(to, g_nr);
-
-                if(path.size() > 1)
+                if(g_nr.size() > 0)
                 {
-                    std::copy(path.begin(), path.end(),
-                              std::ostream_iterator<osmium::unsigned_object_id_type>(std::cout, " -> " ));
+                    std::vector<osmium::unsigned_object_id_type> path = hasDijkstraPath(to, g_nr);
 
-                    route(socket, cop.id, path);
-
-                    auto g = std::find(g_nr.begin(), g_nr.end(), path[path.size()-1]);
-
-                    for(auto it : gngstrs)
+                    if(path.size() > 1)
                     {
-                        if(it.to == *g)
+                        std::copy(path.begin(), path.end(),
+                                  std::ostream_iterator<osmium::unsigned_object_id_type>(std::cout, " -> " ));
+
+                        route(socket, cop.id, path);
+
+                        auto g = std::find(g_nr.begin(), g_nr.end(), path[path.size()-1]);
+
+                        for(auto it : gngstrs)
                         {
-                            cop.gangster_id = *g;
-                            break;
+                            if(it.to == *g)
+                            {
+                                cop.gangster_id = it.id;
+                                break;
+                            }
                         }
                     }
-
                 }
+
+
             }
         }
     }
