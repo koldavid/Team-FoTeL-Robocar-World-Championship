@@ -26,7 +26,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @section DESCRIPTION
- * GNU Robocar City Emulator and Robocar World Championship
+ * Robocar City Emulator and Robocar World Championship
  *
  * desc
  *
@@ -63,20 +63,33 @@
 
 #include <carlexer.hpp>
 
+#include <fstream>
+#include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/filesystem.hpp>
+
 namespace justine
 {
 namespace robocar
 {
 
+
+enum class TrafficType: unsigned int
+{
+  NORMAL=0, ANT, ANT_RND, ANT_RERND, ANT_MRERND
+};
+
 class Traffic
 {
 public:
 
-  Traffic ( int size, const char * shm_segment, double catchdist ) :m_size ( size ), m_catchdist ( catchdist )
+  Traffic ( int size, const char * shm_segment, double catchdist, TrafficType type = TrafficType::NORMAL, int minutes = 10 )
+    :m_size ( size ), m_catchdist ( catchdist ), m_type ( type ), m_minutes ( minutes )
   {
 
 #ifdef DEBUG
-    std::cout << "Attaching shared memory... " << std::endl;
+    std::cout << "Attaching shared memory segment called "
+              << shm_segment
+              << "... " << std::endl;
 #endif
 
     segment = new boost::interprocess::managed_shared_memory (
@@ -90,15 +103,40 @@ public:
     std::cout << "Initializing routine cars ... " << std::endl;
 #endif
 
+    if ( type != TrafficType::NORMAL )
+      for ( shm_map_Type::iterator iter=shm_map->begin();
+            iter!=shm_map->end(); ++iter )
+        {
+
+          for ( auto noderef : iter->second.m_alist )
+            {
+              AntCar::alist[iter->first].push_back ( 1 );
+              AntCar::alist_evaporate[iter->first].push_back ( 1 );
+            }
+        }
+
     for ( int i {0}; i < m_size; ++i )
       {
 
         //std::unique_ptr<Car> car(std::make_unique<Car>(*this)); //14, 4.9
         //std::unique_ptr<Car> car(new Car {*this});
-        std::shared_ptr<Car> car ( new Car {*this} );
 
-        car->init();
-        cars.push_back ( car );
+        if ( type == TrafficType::NORMAL )
+          {
+            std::shared_ptr<Car> car ( new Car {*this} );
+
+            car->init();
+            cars.push_back ( car );
+          }
+        else
+          {
+            std::shared_ptr<AntCar> car ( new AntCar {*this} );
+
+            car->init();
+            cars.push_back ( car );
+
+          }
+
 
       }
 
@@ -106,7 +144,14 @@ public:
     std::cout << "All routine cars initialized." <<"\n";
 #endif
 
+    boost::posix_time::ptime now = boost::posix_time::second_clock::universal_time();
+
+    logfile = boost::posix_time::to_simple_string ( now );
+    logFile = new std::fstream ( logfile.c_str() , std::ios_base::out );
+
     m_cv.notify_one();
+
+    std::cout << "The traffic server is ready." << std::endl;
 
   }
 
@@ -132,17 +177,49 @@ public:
     for ( ; m_run; )
       {
 
-        if ( ++m_time > ( 10*60*1000 ) /m_delay )
-          m_run = false;
+        if ( ++m_time > ( m_minutes*60*1000 ) /m_delay )
+          {
+            m_run = false;
+            break;
+          }
+        else
+          {
+            traffic_run();
+            std::this_thread::sleep_for ( std::chrono::milliseconds ( m_delay ) );
+          }
 
-        traffic_run();
-
-        std::this_thread::sleep_for ( std::chrono::milliseconds ( m_delay ) );
       }
 
-      for ( auto c:m_cop_cars )
-	std::cout  << c;	
-      
+    std::cout << "The traffic simulation is over." << std::endl;
+
+    for ( auto c:m_cop_cars )
+      *logFile  << *c << std::endl;
+
+    logFile->close ();
+
+    boost::filesystem::rename (
+      boost::filesystem::path ( logfile ),
+      boost::filesystem::path ( get_title ( logfile ) ) );
+
+  }
+
+  std::string get_title ( std::string name )
+  {
+
+    std::map <std::string, int> res;
+    for ( auto c:m_cop_cars )
+      {
+        res[c->get_name()] += c->get_num_captured_gangsters();
+      }
+
+    std::ostringstream ss;
+
+    for ( auto r: res )
+      ss << r.first << " " << res[r.first] << " ";
+
+    ss << name << ".txt";
+
+    return ss.str();
   }
 
   osmium::unsigned_object_id_type virtual node()
@@ -172,18 +249,20 @@ public:
 
     std::lock_guard<std::mutex> lock ( cars_mutex );
 
-    std::cout <<
-              m_time <<
-              " " <<
-              cars.size()
-              << std::endl;
+    *logFile <<
+             m_time <<
+             " " <<
+             m_minutes <<
+             " " <<
+             cars.size()
+             << std::endl;
 
     for ( auto car:cars )
       {
         car->step();
 
-        std::cout << *car
-                  <<  " " << std::endl;
+        *logFile << *car
+                 <<  " " << std::endl;
 
       }
   }
@@ -334,7 +413,16 @@ public:
       osmium::unsigned_object_id_type to,
       osmium::unsigned_object_id_type step );
 
+  TrafficType get_type() const
+  {
+    return m_type;
+  }
 
+  int get_time() const
+  {
+    return m_time;
+  }
+  
 protected:
 
   boost::interprocess::managed_shared_memory *segment;
@@ -351,6 +439,7 @@ private:
 
   int m_size {10000};
   int m_time {0};
+  int m_minutes {10};
   std::mutex m_mutex;
   std::condition_variable m_cv;
   std::thread m_thread {&Traffic::processes, this};
@@ -361,6 +450,11 @@ private:
   std::map<int, std::shared_ptr<SmartCar>> m_smart_cars_map;
 
   std::mutex cars_mutex;
+
+  TrafficType m_type {TrafficType::NORMAL};
+
+  std::fstream* logFile;
+  std::string logfile;
 };
 
 }

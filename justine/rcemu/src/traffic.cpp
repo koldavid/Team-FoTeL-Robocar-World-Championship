@@ -23,7 +23,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @section DESCRIPTION
- * GNU Robocar City Emulator and Robocar World Championship
+ * Robocar City Emulator and Robocar World Championship
  *
  * desc
  *
@@ -52,7 +52,7 @@ int justine::robocar::Traffic::addCop ( CarLexer& cl )
 
   m_smart_cars_map[id] = c;
 
-  return id;  
+  return id;
 }
 
 int justine::robocar::Traffic::addGangster ( CarLexer& cl )
@@ -75,15 +75,15 @@ int justine::robocar::Traffic::addGangster ( CarLexer& cl )
   while ( m_smart_cars_map.find ( id ) != m_smart_cars_map.end() );
 
   m_smart_cars_map[id] = c;
-  
-  return id;  
+
+  return id;
 }
 
 
 void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket client_socket )
 {
   const int network_buffer_size = 524288;
-  char data[524288]; // TODO buffered write...
+  char data[network_buffer_size]; // TODO buffered write...
 
   try
     {
@@ -113,7 +113,47 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
           int num = cl.get_num();
           int id {0};
 
-          if ( cl.get_cmd() <100 )
+          if ( cl.get_cmd() == 0 )
+            {
+
+              for ( ;; )
+                {
+                  std::vector<std::shared_ptr<Car>> cars_copy;
+                  {
+                    std::lock_guard<std::mutex> lock ( cars_mutex );
+                    cars_copy = cars;
+                  }
+
+                  std::stringstream ss;
+                  ss <<
+                     m_time <<
+                     " " <<
+                     m_minutes <<
+                     " " <<
+                     cars_copy.size()
+                     << std::endl;
+
+                  for ( auto car:cars_copy )
+                    {
+                      car->step();
+
+                      ss << *car
+                         <<  " " << std::endl;
+
+                    }
+
+                  boost::asio::write ( client_socket, boost::asio::buffer ( data, length ) );
+                  length = std::sprintf ( data,
+                                          "%s", ss.str().c_str() );
+
+                  boost::asio::write ( client_socket, boost::asio::buffer ( data, length ) );
+
+                  std::this_thread::sleep_for ( std::chrono::milliseconds ( 200 ) );
+
+                }
+
+            }
+          else if ( cl.get_cmd() <100 )
             {
               std::lock_guard<std::mutex> lock ( cars_mutex );
 
@@ -121,9 +161,9 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                 {
 
                   if ( cl.get_role() =='c' )
-                      id = addCop ( cl );
+                    id = addCop ( cl );
                   else
-                      id = addGangster ( cl );
+                    id = addGangster ( cl );
 
                   if ( !resp_code )
                     length += std::sprintf ( data+length,
@@ -143,9 +183,12 @@ void justine::robocar::Traffic::cmd_session ( boost::asio::ip::tcp::socket clien
                 {
 
                   std::shared_ptr<SmartCar> c = m_smart_cars_map[cl.get_id()];
-                  c->set_route ( cl.get_route() );
 
-                  length += std::sprintf ( data+length, "<OK %d>", cl.get_id() );
+                  if ( c->set_route ( cl.get_route() ) )
+                    length += std::sprintf ( data+length, "<OK %d>", cl.get_id() );
+                  else
+                    length += std::sprintf ( data+length, "<ERR bad routing vector>" );
+
                 }
               else
                 length += std::sprintf ( data+length, "<ERR unknown car id>" );

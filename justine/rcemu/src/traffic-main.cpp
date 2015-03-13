@@ -23,7 +23,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @section DESCRIPTION
- * GNU Robocar City Emulator and Robocar World Championship
+ * Robocar City Emulator and Robocar World Championship
  *
  * desc
  *
@@ -49,17 +49,19 @@ int main ( int argc, char* argv[] )
   ( "help", "produce help message" )
   ( "shm", boost::program_options::value< std::string > (), "shared memory segment name" )
   ( "port", boost::program_options::value< std::string > (), "the TCP port that the traffic server is listening on to allow agents to communicate with the traffic simulation, the default value is 10007" )
-  ( "nrcars", boost::program_options::value<int>(), "number of the random cars" );
-  ( "catchdist", boost::program_options::value<double>(), "the catch distance of cop cars" );
+  ( "nrcars", boost::program_options::value<int>(), "number of the random cars" )
+  ( "minutes", boost::program_options::value<int>(), "how long does the traffic simulation run for?" )
+  ( "catchdist", boost::program_options::value<double>(), "the catch distance of cop cars" )
+  ( "traffict", boost::program_options::value< std::string > (), "traffic type = NORMAL|ANTS|ANTS_RND|ANTS_RERND|ANTS_MRERND" )
   ;
-
+  
   boost::program_options::variables_map vm;
   boost::program_options::store ( boost::program_options::parse_command_line ( argc, argv, desc ), vm );
   boost::program_options::notify ( vm );
 
   if ( vm.count ( "version" ) )
     {
-      std::cout << "GNU Robocar City Emulator and Robocar World Championship, Traffic Server" << std::endl
+      std::cout << "Robocar City Emulator and Robocar World Championship, Traffic Server" << std::endl
                 << "Copyright (C) 2014, 2015 Norbert Bátfai\n" << std::endl
                 << "License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>" << std::endl
                 << "This is free software: you are free to change and redistribute it." << std::endl
@@ -69,7 +71,7 @@ int main ( int argc, char* argv[] )
 
   if ( vm.count ( "help" ) )
     {
-      std::cout << "GNU Robocar City Emulator and Robocar World Championship home page: https://code.google.com/p/robocar-emulator/" << std::endl;
+      std::cout << "Robocar City Emulator and Robocar World Championship home page: https://code.google.com/p/robocar-emulator/" << std::endl;
       std::cout << desc << std::endl;
       std::cout << "Please report bugs to: nbatfai@gmail.com" << std::endl;
       return 0;
@@ -91,11 +93,33 @@ int main ( int argc, char* argv[] )
   if ( vm.count ( "nrcars" ) )
     nrcars = vm["nrcars"].as < int > ();
 
+  int minutes {10};
+  if ( vm.count ( "minutes" ) )
+    minutes = vm["minutes"].as < int > ();
+  
   int catchdist {15.5};
   if ( vm.count ( "catchdist" ) )
     catchdist = vm["catchdist"].as < int > ();
 
-  justine::robocar::Traffic traffic {nrcars, shm.c_str(), catchdist };
+  std::string traffict;
+  if ( vm.count ( "traffict" ) )
+    traffict.assign ( vm["traffict"].as < std::string > () );
+  else
+    traffict.assign ( "NORMAL" );
+  
+  justine::robocar::TrafficType type;
+  if(traffict == "ANTS_RND")
+    type = justine::robocar::TrafficType::ANT_RND;
+  else if(traffict == "ANTS_RERND")
+    type = justine::robocar::TrafficType::ANT_RERND;
+  else if(traffict == "ANTS_MRERND")
+    type = justine::robocar::TrafficType::ANT_MRERND;
+  else if(traffict == "ANTS")
+    type = justine::robocar::TrafficType::ANT;
+  else
+    type = justine::robocar::TrafficType::NORMAL;
+  
+  justine::robocar::Traffic traffic {nrcars, shm.c_str(), catchdist, type, minutes };
 
   try
     {
