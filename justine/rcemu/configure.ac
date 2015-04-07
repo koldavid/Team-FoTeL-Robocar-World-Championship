@@ -1,5 +1,5 @@
 #
-# GNU Robocar City Emulator and Robocar World Championship
+# Robocar City Emulator and Robocar World Championship
 # Justine - this is a rapid prototype for development of Robocar City Emulator
 # Copyright (C) 2014 Norbert Bátfai, batfai.norbert@inf.unideb.hu
 #
@@ -17,7 +17,7 @@
 #  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
-AC_INIT([justine], [0.0.15], [nbatfai@gmail.com])
+AC_INIT([justine], [0.0.17], [nbatfai@gmail.com])
 AC_CONFIG_FILES([Makefile])
 AM_INIT_AUTOMAKE
 AC_CHECK_LIB(pthread, pthread_create)
@@ -37,7 +37,7 @@ DX_INIT_DOXYGEN(justine, Doxyfile, doc)
 
 AC_LANG([C++])
 CXXFLAGS='-Wall -std=c++1y -O3'
-LDFLAGS='-lboost_system -lpthread'
+LDFLAGS='-lboost_system -lpthread -lboost_date_time -lboost_filesystem'
 AX_CXX_COMPILE_STDCXX_11()
 AC_PROG_LIBTOOL
 BOOST_REQUIRE([1.46.0])
@@ -46,6 +46,7 @@ BOOST_SYSTEM
 BOOST_PROGRAM_OPTIONS
 BOOST_THREAD
 BOOST_ASIO
+BOOST_DATE_TIME
 #BOOST_LOG
 
 CXXFLAGS="$AM_CXXFLAGS $CXXFLAGS"
@@ -55,6 +56,7 @@ AC_CHECK_HEADERS([osmium/osm/relation.hpp osmium/io/any_input.hpp],,
   [[
 #include <osmium/osm/relation.hpp>
 #include <osmium/io/any_input.hpp>
+#include <osmium/index/map/sparse_mem_table.hpp>
     ]])
 
 LIBS="-lbz2 $LIBS"

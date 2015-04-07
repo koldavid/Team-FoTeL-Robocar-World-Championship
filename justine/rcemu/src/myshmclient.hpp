@@ -72,9 +72,14 @@ namespace justine
     namespace sampleclient
     {
 
-        typedef boost::adjacency_list<boost::listS, boost::vecS, boost::directedS,
-        boost::property<boost::vertex_name_t, osmium::unsigned_object_id_type>,
-        boost::property<boost::edge_weight_t, int>> NodeRefGraph;
+        typedef boost::adjacency_list <boost::listS,
+                                       boost::vecS,
+                                       boost::directedS,
+                                       boost::property <boost::vertex_name_t,
+                                                        osmium::unsigned_object_id_type>,
+                                       boost::property<boost::edge_weight_t,
+                                                       int>>
+        NodeRefGraph;
 
         typedef boost::graph_traits<NodeRefGraph>::vertex_descriptor NRGVertex;
         typedef boost::graph_traits<NodeRefGraph>::vertex_iterator NRGVertexIter;

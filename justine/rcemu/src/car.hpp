@@ -26,7 +26,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  *
  * @section DESCRIPTION
- * GNU Robocar City Emulator and Robocar World Championship
+ * Robocar City Emulator and Robocar World Championship
  *
  * desc
  *
@@ -35,6 +35,10 @@
 #include <osmium/osm/types.hpp>
 #include <iostream>
 #include <vector>
+
+#include <osmreader.hpp>
+#include <algorithm>
+
 
 namespace justine
 {
@@ -119,6 +123,43 @@ private:
 
 };
 
+class AntCar : public Car
+{
+public:
+  AntCar ( Traffic & traffic );
+
+  virtual void nextSmarterEdge ( void );
+
+  virtual void print ( std::ostream & os ) const
+  {
+
+    os << m_from
+       << " "
+       << to_node()
+       << " "
+       << get_max_steps()
+       << " "
+       << get_step()
+       << " "
+       << static_cast<unsigned int> ( get_type() );
+
+  }
+
+  osmium::unsigned_object_id_type ant ( void );  
+  osmium::unsigned_object_id_type ant_rnd ( void );  
+  osmium::unsigned_object_id_type ant_rernd ( void );  
+  osmium::unsigned_object_id_type ant_mrernd ( void );  
+  
+  static AdjacencyList alist;
+  static AdjacencyList alist_evaporate;
+  
+
+private:
+  bool rnd {true};
+
+};
+
+
 class SmartCar : public Car
 {
 public:
@@ -129,24 +170,24 @@ public:
 
   virtual void print ( std::ostream & os ) const
   {
-    
+
     os << m_from
-    << " "
-    << to_node()
-    << " "
-    << get_max_steps()
-    << " "
-    << get_step()
-    << " "
-    << static_cast<unsigned int> ( get_type() );
-    
+       << " "
+       << to_node()
+       << " "
+       << get_max_steps()
+       << " "
+       << get_step()
+       << " "
+       << static_cast<unsigned int> ( get_type() );
+
   }
-  
+
   bool get_guided() const
   {
     return m_guided;
   }
-  void set_route ( std::vector<unsigned int> & route );
+  bool set_route ( std::vector<unsigned int> & route );
   virtual void nextEdge ( void );
   virtual void nextGuidedEdge ( void );
   bool set_fromto ( unsigned int from, unsigned int to );
@@ -166,23 +207,28 @@ public:
 
   virtual void print ( std::ostream & os ) const
   {
-    
+
     os << m_from
-    << " "
-    << to_node()
-    << " "
-    << get_max_steps()
-    << " "
-    << get_step()
-    << " "
-    << static_cast<unsigned int> ( get_type() )
-    << " "
-    << get_num_captured_gangsters()
-    << " "
-    << m_name;
-    
-  }  
-  
+       << " "
+       << to_node()
+       << " "
+       << get_max_steps()
+       << " "
+       << get_step()
+       << " "
+       << static_cast<unsigned int> ( get_type() )
+       << " "
+       << get_num_captured_gangsters()
+       << " "
+       << m_name;
+
+  }
+
+  std::string get_name() const
+  {
+    return m_name;
+  }
+
   int get_num_captured_gangsters() const
   {
     return m_num_captured_gangsters;
